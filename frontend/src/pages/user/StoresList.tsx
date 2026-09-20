@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '@/api/client';
+import { useAuth } from '@/context/AuthContext';
 import {
   Search,
   Star,
@@ -23,6 +24,8 @@ interface StoreWithRatings {
 }
 
 export const UserStoresList: React.FC = () => {
+  const { user } = useAuth();
+  const canRateStores = user?.role === 'USER';
   const [stores, setStores] = useState<StoreWithRatings[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -217,14 +220,16 @@ export const UserStoresList: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="mt-5">
-                  <Button
-                    onClick={() => handleOpenRatingModal(store)}
-                    className="w-full h-9 rounded-xl bg-[#315C43] hover:bg-[#264B36] text-[#FFFDF7] text-xs font-medium cursor-pointer"
-                  >
-                    {store.userRating !== null ? 'Modify Rating' : 'Rate Store'}
-                  </Button>
-                </div>
+                {canRateStores && (
+                  <div className="mt-5">
+                    <Button
+                      onClick={() => handleOpenRatingModal(store)}
+                      className="w-full h-9 rounded-xl bg-[#315C43] hover:bg-[#264B36] text-[#FFFDF7] text-xs font-medium cursor-pointer"
+                    >
+                      {store.userRating !== null ? 'Modify Rating' : 'Rate Store'}
+                    </Button>
+                  </div>
+                )}
               </CardContent>
             </Card>
           ))}

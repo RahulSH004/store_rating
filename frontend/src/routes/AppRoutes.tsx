@@ -53,7 +53,7 @@ export const AppRoutes: React.FC = () => {
       </Route>
 
       {/* Normal User Protected Routes */}
-      <Route element={<ProtectedRoute allowedRoles={['USER']} />}>
+      <Route element={<ProtectedRoute allowedRoles={['USER', 'STORE_OWNER']} />}>
         <Route element={<UserLayout />}>
           <Route path="/stores" element={<UserStoresList />} />
           <Route path="/settings/password" element={<UpdatePassword />} />
@@ -64,7 +64,6 @@ export const AppRoutes: React.FC = () => {
       <Route element={<ProtectedRoute allowedRoles={['STORE_OWNER']} />}>
         <Route element={<UserLayout />}>
           <Route path="/owner" element={<OwnerDashboard />} />
-          <Route path="/settings/password" element={<UpdatePassword />} />
         </Route>
       </Route>
 

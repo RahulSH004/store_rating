@@ -54,11 +54,11 @@ export const UpdatePassword: React.FC = () => {
       setNewPassword('');
       setConfirmPassword('');
     } catch (err: any) {
-      setError(
+      const message =
         err.response?.data?.message ||
         err.response?.data?.error ||
-        'Failed to update password. Please check your current password.'
-      );
+        'Failed to update password. Please check your current password.';
+      setError(typeof message === 'string' ? message : 'Failed to update password. Please check your current password.');
     } finally {
       setIsLoading(false);
     }
