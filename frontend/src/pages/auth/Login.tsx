@@ -41,7 +41,7 @@ export const Login: React.FC = () => {
         err.response?.data?.message ||
         err.response?.data?.error ||
         'Invalid email or password. Please try again.';
-      setError(message);
+      setError(typeof message === 'string' ? message : 'Invalid email or password. Please try again.');
     } finally {
       setIsLoading(false);
     }
