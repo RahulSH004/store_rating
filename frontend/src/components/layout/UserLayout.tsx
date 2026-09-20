@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
-import { Store, Star, LogOut, LayoutDashboard, UserCheck } from 'lucide-react';
+import { Store, LogOut, LayoutDashboard, UserCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 

@@ -10,11 +10,4 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
-  server: {
-    proxy: {
-      '/api': 'http://localhost:3000',
-      '/dashboard': 'http://localhost:3000',
-      '/ratings': 'http://localhost:3000',
-    },
-  },
 })
