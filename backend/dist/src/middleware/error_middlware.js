@@ -1,6 +1,9 @@
-import { ApiError } from "../utils/ApiError";
-export function errorHandler(err, req, res, next) {
-    if (err instanceof ApiError) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.errorHandler = errorHandler;
+const ApiError_1 = require("../utils/ApiError");
+function errorHandler(err, req, res, next) {
+    if (err instanceof ApiError_1.ApiError) {
         return res.status(err.statuscode).json({ error: err.message });
     }
     console.error(err);

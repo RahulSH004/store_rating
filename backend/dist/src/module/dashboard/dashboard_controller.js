@@ -1,20 +1,24 @@
-import { getDashboardStatsService, getStoreOwnerDashboardService } from "./dashboard_service";
-export async function getDashboardStats(req, res, next) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getDashboardStats = getDashboardStats;
+exports.getStoreOwnerDashboard = getStoreOwnerDashboard;
+const dashboard_service_1 = require("./dashboard_service");
+async function getDashboardStats(req, res, next) {
     try {
-        const result = await getDashboardStatsService();
+        const result = await (0, dashboard_service_1.getDashboardStatsService)();
         res.status(200).json(result);
     }
     catch (error) {
         next(error);
     }
 }
-export async function getStoreOwnerDashboard(req, res, next) {
+async function getStoreOwnerDashboard(req, res, next) {
     try {
         const ownerId = req.user?.id;
         if (!ownerId) {
             return res.status(400).json({ error: "Owner ID is required" });
         }
-        const result = await getStoreOwnerDashboardService(ownerId);
+        const result = await (0, dashboard_service_1.getStoreOwnerDashboardService)(ownerId);
         res.status(200).json(result);
     }
     catch (error) {

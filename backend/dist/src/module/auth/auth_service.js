@@ -1,28 +1,37 @@
-import dotenv from "dotenv";
-dotenv.config();
-import { prisma } from "../../db";
-import { SignUpSchema, UpdatePasswordSchema } from "./auth_schema";
-import { ApiError } from "../../utils/ApiError";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.signupservice = signupservice;
+exports.siginservice = siginservice;
+exports.logoutservice = logoutservice;
+exports.updatePasswordService = updatePasswordService;
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
+const db_1 = require("../../db");
+const auth_schema_1 = require("./auth_schema");
+const ApiError_1 = require("../../utils/ApiError");
+const bcrypt_1 = __importDefault(require("bcrypt"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const jwtsecret = process.env.JWT_SECRET;
 const saltround = Number(process.env.SALT_ROUNDS ?? "10");
-export async function signupservice(data) {
-    const parsed = SignUpSchema.safeParse(data);
+async function signupservice(data) {
+    const parsed = auth_schema_1.SignUpSchema.safeParse(data);
     if (!parsed.success)
-        throw new ApiError(400, parsed.error.message);
+        throw new ApiError_1.ApiError(400, parsed.error.message);
     const { name, email, password, address } = data;
     try {
-        const existinguser = await prisma.user.findFirst({
+        const existinguser = await db_1.prisma.user.findFirst({
             where: {
                 email: email,
             }
         });
         if (existinguser) {
-            throw new ApiError(409, "User Already Exist");
+            throw new ApiError_1.ApiError(409, "User Already Exist");
         }
-        const hashpassword = await bcrypt.hash(password, saltround);
-        const newUser = await prisma.user.create({
+        const hashpassword = await bcrypt_1.default.hash(password, saltround);
+        const newUser = await db_1.prisma.user.create({
             data: {
                 name,
                 email,
@@ -40,33 +49,33 @@ export async function signupservice(data) {
         return newUser;
     }
     catch (e) {
-        if (e instanceof ApiError)
+        if (e instanceof ApiError_1.ApiError)
             throw e;
         console.error("Signup failed:", e);
-        throw new ApiError(500, "Internal server error");
+        throw new ApiError_1.ApiError(500, "Internal server error");
     }
 }
-export async function siginservice(data) {
+async function siginservice(data) {
     const { email, password } = data;
     try {
-        const existinguser = await prisma.user.findFirst({
+        const existinguser = await db_1.prisma.user.findFirst({
             where: {
                 email,
             }
         });
         if (!existinguser) {
-            throw new ApiError(401, "Invalid email or password");
+            throw new ApiError_1.ApiError(401, "Invalid email or password");
         }
-        const ispasswordvalid = await bcrypt.compare(password, existinguser.passwordhash);
+        const ispasswordvalid = await bcrypt_1.default.compare(password, existinguser.passwordhash);
         if (!ispasswordvalid) {
-            throw new ApiError(401, "Invalid credentials");
+            throw new ApiError_1.ApiError(401, "Invalid credentials");
         }
         const payload = {
             id: existinguser.id,
             userId: existinguser.id,
             role: existinguser.role,
         };
-        const tokens = jwt.sign(payload, jwtsecret, { expiresIn: '1h' });
+        const tokens = jsonwebtoken_1.default.sign(payload, jwtsecret, { expiresIn: '1h' });
         return {
             user: {
                 name: existinguser.name,
@@ -77,53 +86,53 @@ export async function siginservice(data) {
         };
     }
     catch (error) {
-        if (error instanceof ApiError)
+        if (error instanceof ApiError_1.ApiError)
             throw error;
         console.error("Signin failed:", error);
-        throw new ApiError(500, "Internal Sever Error");
+        throw new ApiError_1.ApiError(500, "Internal Sever Error");
     }
 }
-export function logoutservice(token) {
+function logoutservice(token) {
     if (!token) {
-        throw new ApiError(400, "Authentication token is required");
+        throw new ApiError_1.ApiError(400, "Authentication token is required");
     }
     try {
-        jwt.verify(token, jwtsecret);
+        jsonwebtoken_1.default.verify(token, jwtsecret);
         return { message: "Logout successful" };
     }
     catch (error) {
-        if (error instanceof ApiError)
+        if (error instanceof ApiError_1.ApiError)
             throw error;
-        if (error instanceof jwt.JsonWebTokenError) {
-            throw new ApiError(401, "Invalid or expired token");
+        if (error instanceof jsonwebtoken_1.default.JsonWebTokenError) {
+            throw new ApiError_1.ApiError(401, "Invalid or expired token");
         }
-        throw new ApiError(500, "Internal Server Error");
+        throw new ApiError_1.ApiError(500, "Internal Server Error");
     }
 }
-export async function updatePasswordService(userId, data) {
-    const parsed = UpdatePasswordSchema.safeParse(data);
+async function updatePasswordService(userId, data) {
+    const parsed = auth_schema_1.UpdatePasswordSchema.safeParse(data);
     if (!parsed.success)
-        throw new ApiError(400, parsed.error.message);
+        throw new ApiError_1.ApiError(400, parsed.error.message);
     const { oldPassword, newPassword } = parsed.data;
     try {
-        const user = await prisma.user.findUnique({ where: { id: userId } });
+        const user = await db_1.prisma.user.findUnique({ where: { id: userId } });
         if (!user)
-            throw new ApiError(404, "User not found");
-        const isOldPasswordValid = await bcrypt.compare(oldPassword, user.passwordhash);
+            throw new ApiError_1.ApiError(404, "User not found");
+        const isOldPasswordValid = await bcrypt_1.default.compare(oldPassword, user.passwordhash);
         if (!isOldPasswordValid)
-            throw new ApiError(401, "Old password is incorrect");
-        const newHash = await bcrypt.hash(newPassword, saltround);
-        await prisma.user.update({
+            throw new ApiError_1.ApiError(401, "Old password is incorrect");
+        const newHash = await bcrypt_1.default.hash(newPassword, saltround);
+        await db_1.prisma.user.update({
             where: { id: userId },
             data: { passwordhash: newHash },
         });
         return { message: "Password updated successfully" };
     }
     catch (error) {
-        if (error instanceof ApiError)
+        if (error instanceof ApiError_1.ApiError)
             throw error;
         console.error("Update password failed:", error);
-        throw new ApiError(500, "Internal server error");
+        throw new ApiError_1.ApiError(500, "Internal server error");
     }
 }
 //# sourceMappingURL=auth_service.js.map
