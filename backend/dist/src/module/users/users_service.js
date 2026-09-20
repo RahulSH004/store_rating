@@ -1,33 +1,25 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.addUserservice = addUserservice;
-exports.listUserservice = listUserservice;
-exports.getUserByIdService = getUserByIdService;
-const bcrypt_1 = __importDefault(require("bcrypt"));
-const db_1 = require("../../db");
-const ApiError_1 = require("../../utils/ApiError");
-const users_schema_1 = require("./users_schema");
-const users_schema_2 = require("./users_schema");
-const client_1 = require("../../../generated/prisma/client");
+import bcrypt from "bcrypt";
+import { prisma } from "../../db";
+import { ApiError } from "../../utils/ApiError";
+import { AddUserSchema } from "./users_schema";
+import { ListUsersSchema } from "./users_schema";
+import { Prisma } from "../../../generated/prisma/client";
 const saltround = Number(process.env.SALT_ROUNDS ?? "10");
-async function addUserservice(data) {
-    const parsed = users_schema_1.AddUserSchema.safeParse(data);
+export async function addUserservice(data) {
+    const parsed = AddUserSchema.safeParse(data);
     if (!parsed.success) {
-        throw new ApiError_1.ApiError(400, parsed.error.message);
+        throw new ApiError(400, parsed.error.message);
     }
     const { name, email, password, address, role } = parsed.data;
     try {
-        const existinguser = await db_1.prisma.user.findFirst({
+        const existinguser = await prisma.user.findFirst({
             where: { email },
         });
         if (existinguser) {
-            throw new ApiError_1.ApiError(409, "User Already Exist");
+            throw new ApiError(409, "User Already Exist");
         }
-        const hashpassword = await bcrypt_1.default.hash(password, saltround);
-        return await db_1.prisma.user.create({
+        const hashpassword = await bcrypt.hash(password, saltround);
+        return await prisma.user.create({
             data: {
                 name,
                 email,
@@ -44,20 +36,20 @@ async function addUserservice(data) {
         });
     }
     catch (error) {
-        if (error instanceof ApiError_1.ApiError) {
+        if (error instanceof ApiError) {
             throw error;
         }
-        if (error instanceof client_1.Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
-            throw new ApiError_1.ApiError(409, "User Already Exist");
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+            throw new ApiError(409, "User Already Exist");
         }
         console.error("User creation failed:", error);
-        throw new ApiError_1.ApiError(500, "Internal server error");
+        throw new ApiError(500, "Internal server error");
     }
 }
-async function listUserservice(data) {
-    const parsed = users_schema_2.ListUsersSchema.safeParse(data);
+export async function listUserservice(data) {
+    const parsed = ListUsersSchema.safeParse(data);
     if (!parsed.success) {
-        throw new ApiError_1.ApiError(400, parsed.error.message);
+        throw new ApiError(400, parsed.error.message);
     }
     const { name, email, address, role, sortBy, order } = parsed.data;
     const where = {};
@@ -73,7 +65,7 @@ async function listUserservice(data) {
     if (role) {
         where.role = role;
     }
-    return db_1.prisma.user.findMany({
+    return prisma.user.findMany({
         where,
         orderBy: sortBy ? { [sortBy]: order ?? "asc" } : { createdAt: "desc" },
         select: {
@@ -86,9 +78,9 @@ async function listUserservice(data) {
         },
     });
 }
-async function getUserByIdService(userId) {
+export async function getUserByIdService(userId) {
     try {
-        const user = await db_1.prisma.user.findUnique({
+        const user = await prisma.user.findUnique({
             where: {
                 id: userId,
             },
@@ -115,7 +107,7 @@ async function getUserByIdService(userId) {
             }
         });
         if (!user) {
-            throw new ApiError_1.ApiError(404, "User not found");
+            throw new ApiError(404, "User not found");
         }
         if (!user.store) {
             return {
@@ -136,11 +128,11 @@ async function getUserByIdService(userId) {
         };
     }
     catch (error) {
-        if (error instanceof ApiError_1.ApiError) {
+        if (error instanceof ApiError) {
             throw error;
         }
         console.error("Get user by ID failed:", error);
-        throw new ApiError_1.ApiError(500, "Internal server error");
+        throw new ApiError(500, "Internal server error");
     }
 }
 //# sourceMappingURL=users_service.js.map

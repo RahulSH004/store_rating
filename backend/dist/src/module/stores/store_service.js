@@ -1,32 +1,24 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.addStoreService = addStoreService;
-exports.listStoresService = listStoresService;
-exports.listStoresForUserService = listStoresForUserService;
-const bcrypt_1 = __importDefault(require("bcrypt"));
-const client_1 = require("../../../generated/prisma/client");
-const db_1 = require("../../db");
-const ApiError_1 = require("../../utils/ApiError");
-const store_schema_1 = require("./store_schema");
+import bcrypt from "bcrypt";
+import { Prisma } from "../../../generated/prisma/client";
+import { prisma } from "../../db";
+import { ApiError } from "../../utils/ApiError";
+import { AddStoreSchema, ListStoresSchema } from "./store_schema";
 const saltround = Number(process.env.SALT_ROUNDS ?? "10");
-async function addStoreService(data) {
-    const parsed = store_schema_1.AddStoreSchema.safeParse(data);
+export async function addStoreService(data) {
+    const parsed = AddStoreSchema.safeParse(data);
     if (!parsed.success) {
-        throw new ApiError_1.ApiError(400, parsed.error.message);
+        throw new ApiError(400, parsed.error.message);
     }
     const { owner, store } = parsed.data;
     try {
-        return await db_1.prisma.$transaction(async (tx) => {
+        return await prisma.$transaction(async (tx) => {
             const existingOwner = await tx.user.findUnique({
                 where: { email: owner.email },
             });
             if (existingOwner) {
-                throw new ApiError_1.ApiError(409, "Owner email already exists");
+                throw new ApiError(409, "Owner email already exists");
             }
-            const passwordhash = await bcrypt_1.default.hash(owner.password, saltround);
+            const passwordhash = await bcrypt.hash(owner.password, saltround);
             const newOwner = await tx.user.create({
                 data: {
                     name: owner.name,
@@ -57,27 +49,27 @@ async function addStoreService(data) {
         });
     }
     catch (error) {
-        if (error instanceof ApiError_1.ApiError) {
+        if (error instanceof ApiError) {
             throw error;
         }
-        if (error instanceof client_1.Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
-            throw new ApiError_1.ApiError(409, "Owner email or store email already exists");
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+            throw new ApiError(409, "Owner email or store email already exists");
         }
         console.error("Store creation failed:", error);
-        throw new ApiError_1.ApiError(500, "Internal server error");
+        throw new ApiError(500, "Internal server error");
     }
 }
-async function listStoresService(data) {
-    const parsed = store_schema_1.ListStoresSchema.safeParse(data);
+export async function listStoresService(data) {
+    const parsed = ListStoresSchema.safeParse(data);
     if (!parsed.success)
-        throw new ApiError_1.ApiError(400, parsed.error.message);
+        throw new ApiError(400, parsed.error.message);
     const { name, address, sortBy, order } = parsed.data;
     const where = {};
     if (name)
         where.name = { contains: name, mode: "insensitive" };
     if (address)
         where.address = { contains: address, mode: "insensitive" };
-    const stores = await db_1.prisma.store.findMany({
+    const stores = await prisma.store.findMany({
         where,
         orderBy: sortBy ? { [sortBy]: order ?? "asc" } : { createdAt: "desc" },
         select: {
@@ -93,17 +85,17 @@ async function listStoresService(data) {
             : null,
     }));
 }
-async function listStoresForUserService(userId, data) {
-    const parsed = store_schema_1.ListStoresSchema.safeParse(data);
+export async function listStoresForUserService(userId, data) {
+    const parsed = ListStoresSchema.safeParse(data);
     if (!parsed.success)
-        throw new ApiError_1.ApiError(400, parsed.error.message);
+        throw new ApiError(400, parsed.error.message);
     const { name, address, sortBy, order } = parsed.data;
     const where = {};
     if (name)
         where.name = { contains: name, mode: "insensitive" };
     if (address)
         where.address = { contains: address, mode: "insensitive" };
-    const stores = await db_1.prisma.store.findMany({
+    const stores = await prisma.store.findMany({
         where,
         orderBy: sortBy ? { [sortBy]: order ?? "asc" } : { createdAt: "desc" },
         select: {
