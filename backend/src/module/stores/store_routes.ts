@@ -7,6 +7,6 @@ const storeRouter: Router = Router();
 
 storeRouter.post("/", authMiddleware, requireRole("ADMIN"), addStore);
 storeRouter.get("/", authMiddleware, requireRole("ADMIN"), listStoresquery);
-storeRouter.get("/browse-stores", authMiddleware, requireRole("USER"), listStoresForUser);
+storeRouter.get("/browse-stores", authMiddleware, requireRole("USER", "STORE_OWNER"), listStoresForUser);
 
 export default storeRouter;
