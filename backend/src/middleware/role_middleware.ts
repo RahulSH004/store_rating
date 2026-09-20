@@ -5,11 +5,12 @@ import { Role } from "../../generated/prisma/enums"; // or wherever your Role en
 
 export function requireRole(...allowedRoles: Role[]) {
   return (req: Request, res: Response, next: NextFunction) => {
-    if (!req.user) {
+    const user = (req as Request & { user?: { role: Role } }).user;
+    if (!user) {
       return next(new ApiError(401, "Not authenticated"));
     }
 
-    if (!allowedRoles.includes(req.user.role as Role)) {
+    if (!allowedRoles.includes(user.role)) {
       return next(new ApiError(403, "You don't have permission to perform this action"));
     }
 

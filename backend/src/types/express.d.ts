@@ -1,4 +1,4 @@
-import { JwtPayload } from "./payload";
+import type { JwtPayload } from "./payload";
 
 declare global {
     namespace Express {
@@ -8,4 +8,4 @@ declare global {
     }
 }
 
-export {}; // ensures this file is treated as a module, required for global augmentation to work correctly
+export {};

@@ -19,7 +19,7 @@ export async function listStoresquery(req: Request, res: Response, next: NextFun
 }
 export async function listStoresForUser(req: Request, res: Response, next: NextFunction) {
     try {
-        const userId = req.user!.id;
+        const userId = (req as Request & { user?: { id: string } }).user?.id as string;
         const result = await listStoresForUserService(userId, req.query);
         res.status(200).json(result);
     } catch (error) {

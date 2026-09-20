@@ -32,7 +32,7 @@ export async function logout(req: Request, res: Response, next: NextFunction){
 }
 export async function updatePassword(req: Request, res: Response, next: NextFunction) {
     try {
-        const userId = req.user!.id;
+        const userId = (req as Request & { user?: { id: string } }).user?.id;
         if (!userId) {
             return res.status(400).json({ error: "User ID is required" });
         }

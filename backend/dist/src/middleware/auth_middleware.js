@@ -12,7 +12,7 @@ export function authMiddleware(req, res, next) {
     }
     try {
         const decoded = jwt.verify(token, jwtsecret);
-        req.user = decoded; // this works because of the express.d.ts augmentation above
+        req.user = decoded;
         next();
     }
     catch (error) {

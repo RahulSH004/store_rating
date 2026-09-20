@@ -18,7 +18,7 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction) 
 
     try {
         const decoded = jwt.verify(token, jwtsecret) as JwtPayload;
-        req.user = decoded; // this works because of the express.d.ts augmentation above
+        (req as Request & { user?: JwtPayload }).user = decoded;
         next();
     } catch (error) {
         return next(new ApiError(401, "Invalid or expired token"));
