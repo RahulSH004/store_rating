@@ -19,7 +19,7 @@ export async function listStoresquery(req, res, next) {
 }
 export async function listStoresForUser(req, res, next) {
     try {
-        const userId = req.user.id;
+        const userId = req.user?.id;
         const result = await listStoresForUserService(userId, req.query);
         res.status(200).json(result);
     }

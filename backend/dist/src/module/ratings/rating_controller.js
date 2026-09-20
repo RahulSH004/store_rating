@@ -1,7 +1,7 @@
 import { submitRatingService } from "./rating_service";
 export async function submitRating(req, res, next) {
     try {
-        const userId = req.user.id;
+        const userId = req.user?.id;
         if (!userId) {
             return res.status(400).json({ error: "User ID is required" });
         }

@@ -10,7 +10,7 @@ export async function getDashboardStats(req, res, next) {
 }
 export async function getStoreOwnerDashboard(req, res, next) {
     try {
-        const ownerId = req.user.id;
+        const ownerId = req.user?.id;
         if (!ownerId) {
             return res.status(400).json({ error: "Owner ID is required" });
         }

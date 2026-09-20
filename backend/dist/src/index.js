@@ -24,10 +24,9 @@ app.use((req, res) => {
     });
 });
 app.use(errorHandler);
-if (process.env.NODE_ENV !== "production") {
-    app.listen(3000, () => {
-        console.log("Server running on http://localhost:3000");
-    });
-}
+const port = Number(process.env.PORT) || 3000;
+app.listen(port, "0.0.0.0", () => {
+    console.log(`Server running on port ${port}`);
+});
 export default app;
 //# sourceMappingURL=index.js.map
