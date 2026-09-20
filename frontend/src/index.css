@@ -1,0 +1,118 @@
+@import "tailwindcss";
+
+@theme {
+  /* Brand Colors */
+  --color-brand-bg: #f7f3e8;
+  --color-brand-card: #fffdf7;
+  --color-brand-primary: #315c43;
+  --color-brand-primary-hover: #264b36;
+  --color-brand-sage: #6f8f72;
+  --color-brand-sage-light: #e5ebdd;
+  --color-brand-text: #243027;
+  --color-brand-muted: #6f756d;
+  --color-brand-border: #ddd8c9;
+  --color-brand-gold: #c4933f;
+  --color-brand-success: #477a58;
+  --color-brand-error: #b6534b;
+
+  /* shadcn/ui Colors */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Border Radius */
+  --radius-lg: 0.875rem;
+  --radius-md: 0.75rem;
+  --radius-sm: 0.5rem;
+}
+
+:root {
+  /* Base */
+  --background: #f7f3e8;
+  --foreground: #243027;
+
+  /* Card */
+  --card: #fffdf7;
+  --card-foreground: #243027;
+
+  /* Popover */
+  --popover: #fffdf7;
+  --popover-foreground: #243027;
+
+  /* Primary */
+  --primary: #315c43;
+  --primary-foreground: #fffdf7;
+
+  /* Secondary */
+  --secondary: #e5ebdd;
+  --secondary-foreground: #264b36;
+
+  /* Muted */
+  --muted: #efebdd;
+  --muted-foreground: #6f756d;
+
+  /* Accent */
+  --accent: #6f8f72;
+  --accent-foreground: #fffdf7;
+
+  /* Destructive */
+  --destructive: #b6534b;
+  --destructive-foreground: #fffdf7;
+
+  /* Borders & Inputs */
+  --border: #ddd8c9;
+  --input: #ddd8c9;
+  --ring: #315c43;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+
+  background-color: var(--background);
+  color: var(--foreground);
+
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
