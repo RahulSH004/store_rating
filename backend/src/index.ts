@@ -7,7 +7,8 @@ import storeRoutes from "./module/stores/store_routes";
 import dashboardRouter from "./module/dashboard/dashboard_route";
 import ratingsRouter from "./module/ratings/rating_route";
 
-const app: Express = express();
+const app = express();
+const port = Number(process.env.PORT) || 3000;
 
 const frontendUrl = process.env.FRONTEND_URL;
 
@@ -31,10 +32,8 @@ app.use((req: Request, res: Response) => {
 
 app.use(errorHandler);
 
-if (process.env.NODE_ENV !== "production") {
-    app.listen(3000, () => {
-        console.log("Server running on http://localhost:3000");
-    });
-}
+app.listen(port, () => {
+    console.log(`Server running on http://localhost:${port}`);
+});
 
 export default app;
